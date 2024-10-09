@@ -1,0 +1,74 @@
+<launch>
+
+
+
+	<!-- <node name = "map_server" pkg = "map_server" type = "map_server" args="/home/nvidia/wjd/testmaps/carto_map.yaml map:=/map" >
+	</node> -->
+
+	<arg name="scan_name" default="/livox/lidar"/>
+
+    <!-- target_frame: robot_foot_init -->
+
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+	 	<remap from="cloud_in" to="$(arg scan_name)"/>
+        <rosparam>
+            transform_tolerance: 0.01
+            min_height: 0
+            max_height: 1.15
+
+            angle_min: -1.91 # -110°
+            angle_max: 2.09 # 120°
+            angle_increment: 0.0087 # M_PI/360.0
+            scan_time: 10
+            range_min: 0.05
+            range_max: 30.0
+            use_inf: true
+            inf_epsilon: 1.0
+            
+            concurrency_level: 1
+        </rosparam>
+    </node>
+
+    
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" clear_params="true">
+        <rosparam file="$(find cleaning_robot)/test_param/move_base_params.yaml" command="load" />
+        <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find cleaning_robot)/test_param/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find cleaning_robot)/test_param/global_costmap_params.yaml" command="load" />
+
+        <!-- <rosparam file="$(find cleaning_robot)/test_param/base_local_planner_params.yaml" command="load" /> -->
+
+        <!-- <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/> -->
+        <param name="base_global_planner" value="global_planner/GlobalPlanner"/> 
+
+        <rosparam file="$(find cleaning_robot)/test_param/teb_local_planner_params.yaml" command="load" />
+
+
+        <!-- <remap from="map" to="map"/> -->
+        <remap from="odom" to="carto_odom"/>
+    </node>
+
+
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cleaning_robot)/cleaning2.rviz"/> -->
+
+    <node pkg="cleaning_robot" type="path_planning_node" respawn="false" name="path_planning_node" output="screen" clear_params="true">
+        <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="cleaning_costmap" />
+        <rosparam file="$(find cleaning_robot)/test_param/cleaning_costmap_params.yaml" command="load" />
+        <param name="loop_iter" value="90000"/>
+    </node>
+    
+
+
+  <!-- <node pkg="cleaning_robot" type="cleaning_movebase_node" respawn="false" name="cleaning_covering_node" output="screen" clear_params="true">
+    <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="cleaning_costmap" />
+    <rosparam file="$(find cleaning_robot)/test_param/cleaning_costmap_params.yaml" command="load" />
+  </node> -->
+
+
+<!-- <param name="/NextGoal/tolerance_goal" value="0.75" />
+    <node pkg="cleaning_robot" type="next_goal" respawn="true" name="next_goal" output="screen" />  -->
+
+
+
+</launch>

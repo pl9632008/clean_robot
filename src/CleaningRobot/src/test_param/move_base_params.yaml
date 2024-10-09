@@ -1,0 +1,9 @@
+controller_frequency : 10
+
+recovery_behaviors:
+  - name: 'aggressive_reset'
+    type: 'clear_costmap_recovery/ClearCostmapRecovery'
+    
+aggressive_reset:
+  reset_distance: 0.0
+  layer_names: ["obstacle_layer"]
