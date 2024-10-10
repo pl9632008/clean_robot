@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
     while (nh.ok()) {
         tf::StampedTransform transform;
         try {
-            listener.lookupTransform("map", "base_link", ros::Time(0), transform);
+            listener.lookupTransform("odom", "livox_frame", ros::Time(0), transform);
 
             // 获取四元数
             tf::Quaternion q = transform.getRotation();
