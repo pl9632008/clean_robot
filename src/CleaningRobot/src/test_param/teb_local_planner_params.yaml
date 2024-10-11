@@ -31,6 +31,10 @@ TebLocalPlannerROS:
 
  footprint_model:
    type: "point"
+#  footprint_model:
+#    type: "polygon"
+#    vertices: [[0.76,0.49],[0.76,-0.49],[-0.76,-0.49],[-0.76,0.49]]
+
 
  # GoalTolerance
     
