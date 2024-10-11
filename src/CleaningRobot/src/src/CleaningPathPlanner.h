@@ -95,6 +95,10 @@ private:
 
     int SIZE_OF_CELL; //must be odd number.
     int GRID_COVERED_VALUE;
+
+    int loop_iter_;
+
+
 };
 
 #endif // CLEANINGPATHPLANNING_H

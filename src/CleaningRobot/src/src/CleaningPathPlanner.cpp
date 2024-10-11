@@ -12,6 +12,8 @@ CleaningPathPlanning::CleaningPathPlanning(costmap_2d::Costmap2DROS *costmap2d_r
     plan_pub_ = private_nh.advertise<nav_msgs::Path>("cleaning_path", 1);
     grid_pub_ = private_nh.advertise<nav_msgs::OccupancyGrid>("covered_grid", 1);
 
+    private_nh.param("loop_iter", loop_iter_, 9000);
+
     string sizeOfCellString, coveredValueStr;
 
     SIZE_OF_CELL = 3;
@@ -434,9 +436,8 @@ void CleaningPathPlanning::mainPlanningLoop()
     //the main planning loop
     //while(freeSpaceVec_.size()>0)
 
-    int loop_iter = ros::param::param("loop_iter", 9000);
 
-    for (int loop = 0; loop < loop_iter; loop++)
+    for (int loop = 0; loop < loop_iter_; loop++)
     {
         //erase current point from free space first.
         vector<cellIndex>::iterator it;

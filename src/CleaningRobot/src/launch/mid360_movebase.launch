@@ -54,7 +54,6 @@
     <node pkg="cleaning_robot" type="path_planning_node" respawn="false" name="path_planning_node" output="screen" clear_params="true">
         <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="cleaning_costmap" />
         <rosparam file="$(find cleaning_robot)/test_param/cleaning_costmap_params.yaml" command="load" />
-        <param name="loop_iter" value="90000"/>
     </node>
     
 
