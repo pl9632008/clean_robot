@@ -2,6 +2,8 @@
 #include <tf/transform_listener.h>
 #include <tf/tf.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <std_msgs/Float32MultiArray.h>
+
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "tf_listener");
@@ -10,10 +12,14 @@ int main(int argc, char** argv) {
     tf::TransformListener listener;
     ros::Rate rate(10.0);
 
+
+    ros::Publisher array_pub = nh.advertise<std_msgs::Float32MultiArray>("/carto_odom_array", 10);
+
+
     while (nh.ok()) {
         tf::StampedTransform transform;
         try {
-            listener.lookupTransform("odom", "livox_frame", ros::Time(0), transform);
+            listener.lookupTransform("map_temp", "base_link", ros::Time(0), transform);
 
             // 获取四元数
             tf::Quaternion q = transform.getRotation();
@@ -25,9 +31,17 @@ int main(int argc, char** argv) {
             y = transform.getOrigin().getY();
             z = transform.getOrigin().getZ();
 
-        
+            std_msgs::Float32MultiArray array_msg;
+            array_msg.data.clear();  
+            array_msg.data.push_back(x);
+            array_msg.data.push_back(y);
+            array_msg.data.push_back(z);
+            array_msg.data.push_back(roll);
+            array_msg.data.push_back(pitch);
+            array_msg.data.push_back(yaw);
+            array_pub.publish(array_msg);
 
-            ROS_INFO("x: %.2f, y: %.2f, z: %.2f, Roll: %f, Pitch: %f, Yaw: %f", x, y, z, roll, pitch, yaw);
+            // ROS_INFO("x: %.2f, y: %.2f, z: %.2f, Roll: %f, Pitch: %f, Yaw: %f", x, y, z, roll, pitch, yaw);
         } catch (tf::TransformException &ex) {
             ROS_WARN("%s", ex.what());
         }
