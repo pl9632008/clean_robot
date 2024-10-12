@@ -18,7 +18,7 @@ cost_scaling_factor: 2.0
 map_type: costmap
 #导航包所需要的传感器
 
-observation_sources: scan
+observation_sources: scan 
 
 #对传感器的坐标系和数据进行配置。这个也会用于代价地图添加和清除障碍物。例如，你可以用激光雷达传感器用于在代价地图添加障碍物，再添加kinect用于导航和清除障碍物。
 #sensor_frame should be your own frame in tftree
@@ -29,7 +29,8 @@ scan: {
     raytrace_range: 8,
     sensor_frame: livox_frame, 
     data_type: LaserScan, 
-    topic: /scan, 
+    topic: /scan,
+    inf_is_valid: true,
     marking: true,
     clearing: true
     }
@@ -38,12 +39,13 @@ scan: {
 
 # livox_lidar: {
 #     max_obstacle_height: 2,
-#     min_obstacle_height: -1,
-#     obstacle_range: 10,
-#     raytrace_range: 10,
+#     min_obstacle_height: -0.5,
+#     obstacle_range: 6,
+#     raytrace_range: 6,
 #     # sensor_frame: map, 
 #     data_type: PointCloud2, 
 #     topic: /livox/lidar, 
 #     marking: true,
+#     inf_is_valid: true,
 #     clearing: true
 #     }

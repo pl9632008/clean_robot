@@ -55,7 +55,6 @@
         <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="cleaning_costmap" />
         <rosparam file="$(find cleaning_robot)/test_param/cleaning_costmap_params.yaml" command="load" />
     </node>
-    
 
 
   <!-- <node pkg="cleaning_robot" type="cleaning_movebase_node" respawn="false" name="cleaning_covering_node" output="screen" clear_params="true">
