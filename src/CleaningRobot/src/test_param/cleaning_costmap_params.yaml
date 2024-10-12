@@ -11,6 +11,6 @@ cleaning_costmap:
    inflation_radius: 0.9
 
 cleaning_plan_nodehandle:   
-   size_of_cell: 13
+   size_of_cell: 12
    grid_covered_value: 200
-   loop_iter: 18000
+   loop_iter: 180000

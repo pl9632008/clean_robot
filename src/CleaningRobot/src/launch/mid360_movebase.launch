@@ -64,8 +64,10 @@
   </node> -->
 
 
-<!-- <param name="/NextGoal/tolerance_goal" value="0.75" />
-    <node pkg="cleaning_robot" type="next_goal" respawn="true" name="next_goal" output="screen" />  -->
+    <!-- <param name="/NextGoal/tolerance_goal" value="0.75" />
+    <node pkg="cleaning_robot" type="next_goal" respawn="true" name="next_goal" output="screen" >
+        <param name="odom_name" value="/carto_odom"/>
+    </node> -->
 
 
 

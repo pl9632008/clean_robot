@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
             array_msg.data.push_back(z);
             array_msg.data.push_back(roll);
             array_msg.data.push_back(pitch);
-            array_msg.data.push_back(yaw);
+            array_msg.data.push_back(-yaw);
             array_pub.publish(array_msg);
 
             // ROS_INFO("x: %.2f, y: %.2f, z: %.2f, Roll: %f, Pitch: %f, Yaw: %f", x, y, z, roll, pitch, yaw);
