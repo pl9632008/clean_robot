@@ -1,6 +1,7 @@
 #include "CleaningPathPlanner.h"
 #include <costmap_2d/cost_values.h>
 
+
 CleaningPathPlanning::CleaningPathPlanning(costmap_2d::Costmap2DROS *costmap2d_ros)
 {
     //temp solution.
@@ -11,6 +12,7 @@ CleaningPathPlanning::CleaningPathPlanning(costmap_2d::Costmap2DROS *costmap2d_r
     ros::NodeHandle private_nh("~/cleaning_plan_nodehandle");
     plan_pub_ = private_nh.advertise<nav_msgs::Path>("cleaning_path", 1);
     grid_pub_ = private_nh.advertise<nav_msgs::OccupancyGrid>("covered_grid", 1);
+
 
     private_nh.param("loop_iter", loop_iter_, 9000);
 
@@ -26,8 +28,100 @@ CleaningPathPlanning::CleaningPathPlanning(costmap_2d::Costmap2DROS *costmap2d_r
 
     int sizex = costmap2d_->getSizeInCellsX(); //��ȡ��ͼ�ߴ�
     int sizey = costmap2d_->getSizeInCellsY();
-    cout << "The size of map is " << sizex << "  " << sizey << endl;
+    std::cout << "The size of map is " << sizex << "  " << sizey << endl;
     resolution_ = costmap2d_->getResolution(); //�ֱ���
+
+
+    use_block_ = ros::param::param("use_block", false);
+
+
+    if(use_block_){
+        double origin_x = costmap2d_->getOriginX();         
+        double origin_y = costmap2d_->getOriginY();   
+        costmap_2d::Costmap2D * temp_costmap = new costmap_2d::Costmap2D(sizex, sizey, resolution_, origin_x, origin_y,  (unsigned char)254U);
+
+
+        std::map<std::string, std::vector<float>> all_places_data;
+        std::vector<std::string> all_places;
+
+        if (ros::param::get("all_places", all_places)) {
+            for(std::string place_name: all_places){
+                std::vector<float> places_data;
+                if (ros::param::get(place_name, places_data)) {
+                    all_places_data[place_name] = places_data;  // 存储数据
+                } else {
+                    ROS_ERROR("Failed to get param '%s'", place_name.c_str());
+                }
+            }
+            std::string selected_place;
+            if(ros::param::get("selected_place", selected_place)){
+                std::vector<float> selected_area = all_places_data[selected_place];
+                selected_area_ = selected_area;
+                if(selected_area.size()%3 !=0 ){
+                    ROS_ERROR("Invalid pose, check '%s'!", selected_place.c_str());
+
+                }else{
+                    std::vector<geometry_msgs::Point> polygon;
+                    for(int idx = 0; idx < selected_area.size(); idx += 3){
+                        geometry_msgs::Point temp_p;
+                        temp_p.x = selected_area[idx];
+                        temp_p.y = selected_area[idx+1];
+                        temp_p.z = selected_area[idx+2];
+                        polygon.push_back(temp_p);
+                        ROS_INFO("x = %f, y = %f, z = %f\n",temp_p.x, temp_p.y, temp_p.z);
+                    }
+                        temp_costmap->setConvexPolygonCost(polygon, 0);
+                        for (int r = 0; r < sizey; r++){
+                            for (int c = 0; c < sizex; c++) {
+                                if(temp_costmap->getCost(c, r) ==  (unsigned char)254U){
+
+                                    costmap2d_->setCost(c, r,  (unsigned char)254U) ;
+                                }
+
+                            }
+                        }
+
+                        cv::Mat temp_srcMap = Mat(sizey, sizex, CV_8U);
+                        for (int r = 0; r < sizey; r++){
+                            for (int c = 0; c < sizex; c++){
+                                //不是可通行的区域，置为黑色
+                                if(costmap2d_->getCost(c, sizey - r - 1) != (unsigned char)0U){
+
+                                        temp_srcMap.at<uchar>(r, c) = 0;
+                                }else{
+                                        temp_srcMap.at<uchar>(r, c) = 255;
+                                }
+                            }
+                        }
+                        cv::Mat distTransform;
+                        cv::distanceTransform(temp_srcMap, distTransform, cv::DIST_L2, 5);
+                        double minVal, maxVal;
+                        cv::Point maxDistPoint;
+                        cv::minMaxLoc(distTransform, &minVal, &maxVal, nullptr, &maxDistPoint);
+
+                        origin_mx_ = maxDistPoint.x;
+                        origin_my_ = sizey - maxDistPoint.y - 1;
+
+                        // std::cout<<"center = "<<std::endl;
+                        // std::cout<<maxDistPoint<<std::endl;
+                        // float radius = static_cast<float>(maxVal);
+                        // cv::circle(temp_srcMap, maxDistPoint, static_cast<int>(radius), cv::Scalar(0), 6);
+                        // cv::namedWindow("abc", cv::WINDOW_NORMAL);
+                        // imshow("abc",temp_srcMap);
+                        // cv::waitKey(1);
+
+                        delete  temp_costmap;
+                }
+
+            }
+
+
+        }else{
+
+            ROS_ERROR("Failed to get param 'all_places'");
+        } 
+    }
+    
 
     srcMap_ = Mat(sizey, sizex, CV_8U);
     for (int r = 0; r < sizey; r++)
@@ -39,13 +133,14 @@ CleaningPathPlanning::CleaningPathPlanning(costmap_2d::Costmap2DROS *costmap2d_r
         }
     }
 
+
     initializeMats();
     initializeCoveredGrid();
 
-    //imshow("debugMapImage",srcMap_);
-    //imshow("debugCellMatImage",cellMat_);
-    //waitKey(0);
-    //imwrite("debug_srcmap.jpg",srcMap_);
+    // imshow("debugMapImage",srcMap_);
+    // imshow("debugCellMatImage",cellMat_);
+    // waitKey(0);
+    // imwrite("debug_srcmap.jpg",srcMap_);
 
     if (!srcMap_.empty())
         initialized_ = true; //��仰�h��srcMap_������ж�������˵����ʼ���ɹ���
@@ -401,25 +496,43 @@ void CleaningPathPlanning::mainPlanningLoop()
     //    initPoint.col = cellMat_.cols/2;
 
     initPoint.theta = 90;
-    bool isok = costmap2d_ros_->getRobotPose(initPose_);
-    if (!isok)
-    {
-        ROS_INFO("Failed to get robot location! Please check where goes wrong!");
-        return;
-    }
-    //initPoint.row = initPose_.getOrigin().y()
     unsigned int mx, my;
-    double wx = initPose_.pose.position.x; //��ȡԭ���x����
-    double wy = initPose_.pose.position.y;
+    double wx, wy;
+
+
+    if(use_block_){
+        
+        mx = origin_mx_;
+        my = origin_my_;
+
+    }else{
+
+        bool isok = costmap2d_ros_->getRobotPose(initPose_);
+        if (!isok)
+        {
+            ROS_INFO("Failed to get robot location! Please check where goes wrong!");
+            return;
+        }
+        //initPoint.row = initPose_.getOrigin().y()
+
+        wx = initPose_.pose.position.x; //��ȡԭ���x����
+        wy = initPose_.pose.position.y;
+
+        bool getmapcoor = costmap2d_->worldToMap(wx, wy, mx, my);
+        if (!getmapcoor)
+        {
+            ROS_INFO("Failed to get robot location in map! Please check where goes wrong!");
+            return;
+        }
+
+    }
+
+
+  
     //geometry_msgs::PoseStamped current_position;
     //tf::poseStampedTFToMsg(global_pose, current_position);
 
-    bool getmapcoor = costmap2d_->worldToMap(wx, wy, mx, my);
-    if (!getmapcoor)
-    {
-        ROS_INFO("Failed to get robot location in map! Please check where goes wrong!");
-        return;
-    }
+
     initPoint.row = cellMat_.rows - my / SIZE_OF_CELL - 1; //���о�һ���������֮���ת�����⡣
     initPoint.col = mx / SIZE_OF_CELL;                     //����ò�Ʋ���������ת��
 

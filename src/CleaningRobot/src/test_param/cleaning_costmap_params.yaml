@@ -13,4 +13,4 @@ cleaning_costmap:
 cleaning_plan_nodehandle:   
    size_of_cell: 12
    grid_covered_value: 200
-   loop_iter: 180000
+   loop_iter: 18000

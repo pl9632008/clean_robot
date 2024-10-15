@@ -51,6 +51,8 @@
 
     <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cleaning_robot)/cleaning2.rviz"/> -->
 
+    <rosparam file="$(find cleaning_robot)/test_param/block_areas.yaml" command="load"/>
+
     <node pkg="cleaning_robot" type="path_planning_node" respawn="false" name="path_planning_node" output="screen" clear_params="true">
         <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="cleaning_costmap" />
         <rosparam file="$(find cleaning_robot)/test_param/cleaning_costmap_params.yaml" command="load" />

@@ -20,6 +20,8 @@
 #include <costmap_2d/costmap_2d_ros.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
+#include <nav_msgs/Odometry.h>
+
 
 using namespace cv;
 using namespace std;
@@ -95,9 +97,12 @@ private:
 
     int SIZE_OF_CELL; //must be odd number.
     int GRID_COVERED_VALUE;
-
+    
+    bool use_block_;
     int loop_iter_;
-
+    std::vector<float> selected_area_;
+    int origin_mx_;
+    int origin_my_;
 
 };
 
