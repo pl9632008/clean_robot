@@ -133,42 +133,47 @@ void write_json(std::vector<geometry_msgs::PoseStamped> final_path){
         std::string selected_place;
         bool res_selected = ros::param::get("selected_place", selected_place);
         if(res_selected){
-            boost::uuids::uuid uuid1 = generator();
-            std::string uuid_str1 = boost::uuids::to_string(uuid1);
+            // boost::uuids::uuid uuid1 = generator();
+            // std::string uuid_str1 = boost::uuids::to_string(uuid1);
             boost::uuids::uuid uuid2 = generator();
             std::string uuid_str2 = boost::uuids::to_string(uuid2);
 
-            json j_temp;
-            j_temp["name"] = selected_place + "_travel";
-            j_temp["uuid"]=uuid_str1;
-            j_temp["line_color"]="#ff0000";
-            j_temp["pose_list"]={};
-            int cnt = 0;
-            for(auto j : final_path){
-                json j_point;
-                j_point["uuid"]=uuid_str2;
-                j_point["pose_type"] = 1;
-                j_point["sn"] = std::to_string(cnt);
-                cnt++;
-                j_point["position"]["pos_x"]=j.pose.position.x;
-                j_point["position"]["pos_y"]=j.pose.position.y;
-                j_point["position"]["pos_z"]=j.pose.position.z;
-                j_point["orientation"]["ori_w"]=j.pose.orientation.w;
-                j_point["orientation"]["ori_x"]=j.pose.orientation.x;
-                j_point["orientation"]["ori_y"]=j.pose.orientation.y;
-                j_point["orientation"]["ori_z"]=j.pose.orientation.z;
-                j_temp["pose_list"].push_back(j_point);
+            for (auto& block : j_out["block_list"]) {
+                if(block["name"]==selected_place){
+                    auto& pose_list = block["pose_list"];
+                    pose_list.erase(std::remove_if(pose_list.begin(), pose_list.end(),
+                                                [](const json& pose) {
+                                                return pose["pose_type"] == 1;
+                                                }), 
+                                    pose_list.end());
+                }
             }
 
-            j_out["block_list"].erase(std::remove_if(j_out["block_list"].begin(), j_out["block_list"].end(),
-                                                [&](const json& block) {
-                                                    return block.contains("name") && block["name"] ==  j_temp["name"];
-                                                }),
-                                                j_out["block_list"].end());
+            
+            for (auto& block : j_out["block_list"]) {
 
-            j_out["block_list"].push_back(j_temp);
-        }
-        
+                if(block["name"]==selected_place){
+
+                    auto& pose_list = block["pose_list"];
+                    int cnt = 0;
+                    for(auto j : final_path){
+                        json j_point;
+                        j_point["uuid"]=uuid_str2;
+                        j_point["pose_type"] = 1;
+                        j_point["sn"] = std::to_string(cnt);
+                        cnt++;
+                        j_point["position"]["pos_x"]=j.pose.position.x;
+                        j_point["position"]["pos_y"]=j.pose.position.y;
+                        j_point["position"]["pos_z"]=j.pose.position.z;
+                        j_point["orientation"]["ori_w"]=j.pose.orientation.w;
+                        j_point["orientation"]["ori_x"]=j.pose.orientation.x;
+                        j_point["orientation"]["ori_y"]=j.pose.orientation.y;
+                        j_point["orientation"]["ori_z"]=j.pose.orientation.z;
+                        pose_list.push_back(j_point);
+                    }
+                }
+            }
+        } 
     }
 
     std::ofstream o(block_json_path);
