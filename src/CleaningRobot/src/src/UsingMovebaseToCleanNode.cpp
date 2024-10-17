@@ -10,6 +10,8 @@
 #include <dynamic_reconfigure/Reconfigure.h>
 #include <dynamic_reconfigure/Config.h>
 
+
+
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
 int main(int argc, char** argv){
@@ -35,6 +37,8 @@ int main(int argc, char** argv){
 
   //full coverage path.
   std::vector<geometry_msgs::PoseStamped> fullCoverPath = pathPlanner->GetPathInROS();
+
+
   int beginNum = fullCoverPath.size();
 
   //border tracing path.
@@ -43,6 +47,9 @@ int main(int argc, char** argv){
 //  {
 //      fullCoverPath.push_back(borderTrackingPath[i]);
 //  }
+
+
+  std::cout<<"fullcoverpath_size"<<fullCoverPath.size()<<std::endl;
 
   //main loop
   ros::Rate r(10);
@@ -64,8 +71,9 @@ int main(int argc, char** argv){
 
       ROS_INFO("Sending next goal!");
       ac.sendGoal(nextGoal);
-      ac.waitForResult();
-
+      ac.waitForResult(ros::Duration(1));
+      
+  
       if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
       {
           ROS_INFO("Hooray, the base moved a point forward in full path!");
@@ -75,12 +83,16 @@ int main(int argc, char** argv){
       else
       {
           ROS_INFO("The base failed to move forward to the next path for some reason!");
-          continue;
+          // continue;
       }
 
+      
       pathPlanner->PublishCoveragePath();
       ros::spinOnce();
       r.sleep();
+
+
+
     }
 
   delete pathPlanner;

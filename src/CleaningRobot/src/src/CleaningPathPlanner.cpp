@@ -8,6 +8,12 @@ CleaningPathPlanning::CleaningPathPlanning(costmap_2d::Costmap2DROS *costmap2d_r
     costmap2d_ros_ = costmap2d_ros;
     //costmap2d_ros_->updateMap();
     costmap2d_ = costmap2d_ros->getCostmap();
+    int sizex = costmap2d_->getSizeInCellsX(); 
+    int sizey = costmap2d_->getSizeInCellsY();
+    double origin_x = costmap2d_->getOriginX();         
+    double origin_y = costmap2d_->getOriginY();   
+    resolution_ = costmap2d_->getResolution(); 
+
 
     ros::NodeHandle private_nh("~/cleaning_plan_nodehandle");
     plan_pub_ = private_nh.advertise<nav_msgs::Path>("cleaning_path", 1);
@@ -26,20 +32,16 @@ CleaningPathPlanning::CleaningPathPlanning(costmap_2d::Costmap2DROS *costmap2d_r
     if (private_nh.searchParam("grid_covered_value", coveredValueStr))
         private_nh.param("grid_covered_value", GRID_COVERED_VALUE, 0);
 
-    int sizex = costmap2d_->getSizeInCellsX(); //��ȡ��ͼ�ߴ�
-    int sizey = costmap2d_->getSizeInCellsY();
-    std::cout << "The size of map is " << sizex << "  " << sizey << endl;
-    resolution_ = costmap2d_->getResolution(); //�ֱ���
+
 
 
     use_block_ = ros::param::param("use_block", false);
 
+    costmap2d_ros_->pause();
 
     if(use_block_){
-        double origin_x = costmap2d_->getOriginX();         
-        double origin_y = costmap2d_->getOriginY();   
-        costmap_2d::Costmap2D * temp_costmap = new costmap_2d::Costmap2D(sizex, sizey, resolution_, origin_x, origin_y,  (unsigned char)254U);
 
+        costmap_2d::Costmap2D * temp_costmap = new costmap_2d::Costmap2D(sizex, sizey, resolution_, origin_x, origin_y,  (unsigned char)254U);
 
         std::map<std::string, std::vector<float>> all_places_data;
         std::vector<std::string> all_places;
@@ -102,13 +104,14 @@ CleaningPathPlanning::CleaningPathPlanning(costmap_2d::Costmap2DROS *costmap2d_r
                         origin_mx_ = maxDistPoint.x;
                         origin_my_ = sizey - maxDistPoint.y - 1;
 
-                        // std::cout<<"center = "<<std::endl;
-                        // std::cout<<maxDistPoint<<std::endl;
-                        // float radius = static_cast<float>(maxVal);
-                        // cv::circle(temp_srcMap, maxDistPoint, static_cast<int>(radius), cv::Scalar(0), 6);
-                        // cv::namedWindow("abc", cv::WINDOW_NORMAL);
-                        // imshow("abc",temp_srcMap);
-                        // cv::waitKey(1);
+                        #ifdef DEBUG_OPTION
+                            float radius = static_cast<float>(maxVal);
+                            cv::circle(temp_srcMap, maxDistPoint, static_cast<int>(radius), cv::Scalar(0), 6);
+                            cv::namedWindow("abc", cv::WINDOW_NORMAL);
+                            imshow("abc",temp_srcMap);
+                            cv::waitKey(0);
+                        #endif
+
 
                         delete  temp_costmap;
                 }
@@ -137,10 +140,16 @@ CleaningPathPlanning::CleaningPathPlanning(costmap_2d::Costmap2DROS *costmap2d_r
     initializeMats();
     initializeCoveredGrid();
 
-    // imshow("debugMapImage",srcMap_);
-    // imshow("debugCellMatImage",cellMat_);
-    // waitKey(0);
-    // imwrite("debug_srcmap.jpg",srcMap_);
+    #ifdef DEBUG_OPTION
+        cv::namedWindow("debugMapImage", cv::WINDOW_NORMAL);
+        cv::namedWindow("debugCellMatImage", cv::WINDOW_NORMAL);
+        cv::imshow("debugMapImage",srcMap_);
+        cv::imshow("debugCellMatImage",cellMat_);
+        cv::waitKey(0);
+    #endif
+
+    costmap2d_ros_->start();
+
 
     if (!srcMap_.empty())
         initialized_ = true; //��仰�h��srcMap_������ж�������˵����ʼ���ɹ���

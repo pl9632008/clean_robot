@@ -107,6 +107,13 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 
+option(DEBUG_OPTION "debug opiton" OFF)
+if (DEBUG_OPTION)
+        message(STATUS "DEBUG_OPTION ON.")
+        add_definitions(-DDEBUG_OPTION)
+else ()
+        message(STATUS "DEBUG_OPTION OFF.")
+endif()
 
 find_package(catkin REQUIRED
   COMPONENTS
@@ -136,7 +143,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -236,3 +243,7 @@ add_executable(transform src/transform.cpp)
 target_link_libraries(transform
 	${catkin_LIBRARIES}
 )
+
+
+add_executable(write_json_node src/write_json.cpp src/CleaningPathPlanner.cpp)
+target_link_libraries(write_json_node ${catkin_LIBRARIES} ${OpenCV_LIBS} stdc++fs)
