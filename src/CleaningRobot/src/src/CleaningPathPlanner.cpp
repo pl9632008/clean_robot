@@ -33,8 +33,6 @@ CleaningPathPlanning::CleaningPathPlanning(costmap_2d::Costmap2DROS *costmap2d_r
         private_nh.param("grid_covered_value", GRID_COVERED_VALUE, 0);
 
 
-
-
     use_block_ = ros::param::param("use_block", false);
 
     costmap2d_ros_->pause();

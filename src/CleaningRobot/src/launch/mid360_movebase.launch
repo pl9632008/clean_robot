@@ -36,13 +36,8 @@
         <rosparam file="$(find cleaning_robot)/test_param/local_costmap_params.yaml" command="load" />
         <rosparam file="$(find cleaning_robot)/test_param/global_costmap_params.yaml" command="load" />
 
-        <!-- <rosparam file="$(find cleaning_robot)/test_param/base_local_planner_params.yaml" command="load" /> -->
-
-        <!-- <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/> -->
+        <rosparam file="$(find cleaning_robot)/test_param/eband_local_planner_params.yaml" command="load" />
         <param name="base_global_planner" value="global_planner/GlobalPlanner"/> 
-
-        <rosparam file="$(find cleaning_robot)/test_param/teb_local_planner_params.yaml" command="load" />
-
 
         <!-- <remap from="map" to="map"/> -->
         <remap from="odom" to="carto_odom"/>

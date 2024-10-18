@@ -211,9 +211,9 @@ int main(int argc, char** argv){
 
   std::vector<geometry_msgs::PoseStamped> final_path = extractFirstAndLast(fullCoverPath);
 
-  write_json(final_path);
+  write_json(fullCoverPath);
 
-  fullCoverPath = final_path;
+//   fullCoverPath = final_path;
 
   int beginNum = fullCoverPath.size();
 

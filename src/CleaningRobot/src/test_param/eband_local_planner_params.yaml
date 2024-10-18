@@ -1,0 +1,18 @@
+base_local_planner: "eband_local_planner/EBandPlannerROS"
+
+EBandPlannerROS:
+  xy_goal_tolerance: 0.1    #到达目标姿态的距离公差
+  yaw_goal_tolerance: 0.05  #到达目标姿态的方向公差
+  rot_stopped_vel: 0.01     #决定机器人是否停止以避免极限循环或锁定的最小角速度
+  trans_stopped_vel: 0.01   #决定机器人是否停止以避免极限循环或锁定的最小线速度
+
+
+  max_vel_lin: 0.75         #最大线速度
+  max_vel_th: 1.0           #最大角速度
+  min_vel_lin: 0.1          #最小线速度
+  min_vel_th: 0.0           #最小角速度
+
+  Ctrl_Rate: 10.0                     #控制频率
+  max_acceleration: 0.5               #允许的最大加速度
+  max_translational_acceleration: 0.5 #最大线性加速度
+  max_rotational_acceleration: 1.5    #最大角加速度

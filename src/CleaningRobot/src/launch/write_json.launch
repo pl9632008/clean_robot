@@ -36,13 +36,8 @@
         <rosparam file="$(find cleaning_robot)/test_param/local_costmap_params.yaml" command="load" />
         <rosparam file="$(find cleaning_robot)/test_param/global_costmap_params.yaml" command="load" />
 
-        <!-- <rosparam file="$(find cleaning_robot)/test_param/base_local_planner_params.yaml" command="load" /> -->
-
-        <!-- <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/> -->
+        <rosparam file="$(find cleaning_robot)/test_param/eband_local_planner_params.yaml" command="load" />
         <param name="base_global_planner" value="global_planner/GlobalPlanner"/> 
-
-        <rosparam file="$(find cleaning_robot)/test_param/teb_local_planner_params.yaml" command="load" />
-
 
         <!-- <remap from="map" to="map"/> -->
         <remap from="odom" to="carto_odom"/>
@@ -58,7 +53,7 @@
         <rosparam file="$(find cleaning_robot)/test_param/cleaning_costmap_params.yaml" command="load" />
     </node> -->
 
-  <param name="block_json_path" value="/home/nvidia/wjd/clean/src/CleaningRobot/src/config/block.json"/>
+  <param name="block_json_path" value="/home/nvidia/wjd/clean/src/CleaningRobot/src/config/block1.json"/>
 
   <node pkg="cleaning_robot" type="write_json_node" respawn="false" name="path_planning_node" output="screen" clear_params="true">
     <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="cleaning_costmap" />
@@ -70,7 +65,6 @@
     <node pkg="cleaning_robot" type="next_goal" respawn="true" name="next_goal" output="screen" >
         <param name="odom_name" value="/carto_odom"/>
     </node> -->
-
 
 
 </launch>
