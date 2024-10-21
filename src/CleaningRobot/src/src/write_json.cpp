@@ -224,7 +224,13 @@ int main(int argc, char** argv){
 //      fullCoverPath.push_back(borderTrackingPath[i]);
 //  }
 
+  int time_interval;
+  ros::param::param("time_interval", time_interval, 10);
 
+  bool runing_mode;
+  ros::param::param("runing_mode",runing_mode, false);
+
+  std::cout<<"runing_mode = "<<runing_mode<<endl;
   std::cout<<"fullcoverpath_size"<<fullCoverPath.size()<<std::endl;
 
   //main loop
@@ -247,7 +253,17 @@ int main(int argc, char** argv){
 
       ROS_INFO("Sending next goal!");
       ac.sendGoal(nextGoal);
-      ac.waitForResult(ros::Duration(1));
+    //   ac.waitForResult(ros::Duration(1));
+
+     if(i==0 && runing_mode ){
+        ac.waitForResult(ros::Duration(300));
+      }else{
+
+        ac.waitForResult(ros::Duration(time_interval));
+
+      }
+
+
 
       double w,x,y,z;
       w =  posestamped.pose.orientation.w;
@@ -263,6 +279,7 @@ int main(int argc, char** argv){
           ROS_INFO("Hooray, the base moved a point forward in full path!");
           pathPlanner->SetCoveredGrid(posestamped.pose.position.x,posestamped.pose.position.y);
           pathPlanner->PublishGrid();
+          
       }
       else
       {
