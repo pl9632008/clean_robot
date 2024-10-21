@@ -255,6 +255,7 @@ int main(int argc, char** argv){
       ac.sendGoal(nextGoal);
     //   ac.waitForResult(ros::Duration(1));
 
+
      if(i==0 && runing_mode ){
         ac.waitForResult(ros::Duration(300));
       }else{
@@ -291,7 +292,6 @@ int main(int argc, char** argv){
       pathPlanner->PublishCoveragePath();
       ros::spinOnce();
       r.sleep();
-
 
 
     }

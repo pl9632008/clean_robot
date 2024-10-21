@@ -1,0 +1,29 @@
+<launch>
+
+
+    <rosparam file="$(find cleaning_robot)/test_param/block_areas.yaml" command="load"/>
+
+    <!-- <node pkg="cleaning_robot" type="path_planning_node" respawn="false" name="path_planning_node" output="screen" clear_params="true">
+        <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="cleaning_costmap" />
+        <rosparam file="$(find cleaning_robot)/test_param/cleaning_costmap_params.yaml" command="load" />
+    </node> -->
+
+
+    <param name="time_interval" value="15"/>
+
+    <param name="runing_mode" value="true"/>
+
+  <node pkg="cleaning_robot" type="cleaning_movebase_node" respawn="false" name="path_planning_node" output="screen" clear_params="true">
+    <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="cleaning_costmap" />
+    <rosparam file="$(find cleaning_robot)/test_param/cleaning_costmap_params.yaml" command="load" />
+  </node>
+
+
+    <!-- <param name="/NextGoal/tolerance_goal" value="0.75" />
+    <node pkg="cleaning_robot" type="next_goal" respawn="true" name="next_goal" output="screen" >
+        <param name="odom_name" value="/carto_odom"/>
+    </node> -->
+
+
+
+</launch>

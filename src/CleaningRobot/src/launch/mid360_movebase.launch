@@ -56,7 +56,7 @@
 
     <param name="time_interval" value="15"/>
 
-    <param name="runing_mode" value="false"/>
+    <param name="runing_mode" value="true"/>
 
   <node pkg="cleaning_robot" type="cleaning_movebase_node" respawn="false" name="path_planning_node" output="screen" clear_params="true">
     <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="cleaning_costmap" />

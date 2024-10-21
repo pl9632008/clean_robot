@@ -1,13 +1,14 @@
 use_block:
   true
 selected_place:
-  place5
+  place6
 all_places :
   - place1
   - place2
   - place3
   - place4
   - place5
+  - place6
 place1:
   [-47,34,0,
   -54,12,0,
@@ -36,5 +37,11 @@ place5:
   [6.58,-21.7,0,
   29.23,-22.3,0,
   29.2,-64,0,
-  6.58,-64,0
+  6.58,-64,0]
+place6:
+  [
+    -14.3,6.2,0,
+    -18,-9,0,
+    -6,-14,0,
+    -1,5.9,0
   ]
