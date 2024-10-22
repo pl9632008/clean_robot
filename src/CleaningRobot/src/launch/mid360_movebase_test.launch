@@ -13,7 +13,7 @@
         <rosparam>
             transform_tolerance: 0.01
             min_height: 0
-            max_height: 1.15
+            max_height: 1.0
 
             angle_min: -1.91 # -110°
             angle_max: 2.09 # 120°
@@ -44,33 +44,7 @@
     </node>
 
 
-    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cleaning_robot)/cleaning2.rviz"/> -->
-
-    <rosparam file="$(find cleaning_robot)/test_param/block_areas.yaml" command="load"/>
-
-    <!-- <node pkg="cleaning_robot" type="path_planning_node" respawn="false" name="path_planning_node" output="screen" clear_params="true">
-        <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="cleaning_costmap" />
-        <rosparam file="$(find cleaning_robot)/test_param/cleaning_costmap_params.yaml" command="load" />
-    </node> -->
-
-  <param name="block_json_path" value="/home/nvidia/wjd/clean/src/CleaningRobot/src/config/block2.json"/>
-
-
-  <param name="time_interval" value="15"/>
-
-  <param name="runing_mode" value="false"/>
-
-
-  <node pkg="cleaning_robot" type="write_json_node" respawn="false" name="path_planning_node" output="screen" clear_params="true">
-    <rosparam file="$(find cleaning_robot)/test_param/costmap_common_params.yaml" command="load" ns="cleaning_costmap" />
-    <rosparam file="$(find cleaning_robot)/test_param/cleaning_costmap_params.yaml" command="load" />
-  </node>
-
-
-    <!-- <param name="/NextGoal/tolerance_goal" value="0.75" />
-    <node pkg="cleaning_robot" type="next_goal" respawn="true" name="next_goal" output="screen" >
-        <param name="odom_name" value="/carto_odom"/>
-    </node> -->
+ 
 
 
 </launch>

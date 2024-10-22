@@ -9,7 +9,7 @@
     </node> -->
 
 
-    <param name="time_interval" value="15"/>
+    <param name="time_interval" value="10"/>
 
     <param name="runing_mode" value="true"/>
 
